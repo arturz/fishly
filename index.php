@@ -26,6 +26,6 @@
   </script>
   <body>
     <div id="app"></div>
-    <script type="text/javascript" src="app/assets/bundle/main.bundle.js" ></script>
+    <script type="text/javascript" src="./app/assets/bundle/main.bundle.js" ></script>
   </body>
 </html>

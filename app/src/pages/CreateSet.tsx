@@ -39,15 +39,22 @@ export default () => {
 
   const handleChangeOriginalWord = index => ({ target: { value } }) => {
     const newWords = [...words]
-    newWords[index].original = value
+    const word = newWords[index]
+    word.original = value
+
+    if(index === newWords.length - 1 && word.translated !== ''){
+      newWords.push({ original: '', translated: '', __id: +wordsId.current })
+    }
+
     setWords(newWords)
   }
 
   const handleChangeTranslatedWord = index => ({ target: { value } }) => {
     const newWords = [...words]
-    newWords[index].translated = value
+    const word = newWords[index]
+    word.translated = value
 
-    if(index === words.length - 1){
+    if(index === newWords.length - 1 && word.original !== ''){
       newWords.push({ original: '', translated: '', __id: +wordsId.current })
     }
 
@@ -89,18 +96,21 @@ export default () => {
                 </Select>
               </FormControl>
             </div>
-            <Typography variant="h5">Dodaj fiszki</Typography>
-            <Grid container direction="column" className={classes.wordsContainer}>
+            <Typography variant="h5" gutterBottom>Dodaj fiszki</Typography>
+            <Grid container direction="column" className={classes.wordsContainer} spacing={1}>
             {
               words.map(({ original, translated, __id }, index) => (
                 <Grid item key={__id} container alignItems="flex-end" className={classes.wordsRow}>
                   <TextField label="Słowo" value={original} onChange={handleChangeOriginalWord(index)} />
                   <TextField label="Przetłumaczone słowo" value={translated} onChange={handleChangeTranslatedWord(index)} />
-                  <Button variant="outlined" color="secondary" onClick={handleDeleteWord(index)}>Usuń</Button>
+                  <Button variant="outlined" color="primary" onClick={handleDeleteWord(index)}>Usuń</Button>
                 </Grid>
               ))
             }
             </Grid>
+            <Typography variant="body1" gutterBottom>
+              Ilość fiszek w zestawie: { words.length - 1 }
+            </Typography>
             <Button variant="contained" color="primary">
               Zapisz zestaw
             </Button>

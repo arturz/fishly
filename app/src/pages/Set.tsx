@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import Header from '../components/Header'
 import Main from '../components/Main'
 import { makeStyles, Container, Typography, Grid, CircularProgress, Card, List, ListItem, CardContent, CardActions, Button, Divider, Theme } from '@material-ui/core'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import WordCard from '../components/WordCard'
 import sets from '../mocks/sets'
 
@@ -19,6 +19,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     justifyContent: 'space-between',
     paddingTop: theme.spacing(2)
+  },
+  link: {
+    textDecoration: 'none',
+    color: theme.palette.primary.main
   }
 }))
 
@@ -106,7 +110,7 @@ export default () => {
                 </Grid>
                 <Grid item>
                   <Typography variant="body2">
-                    Autor: { set.createdBy.login }
+                    Autor: <Link to={`/account/${set.createdBy.login}`} className={classes.link}>{ set.createdBy.login }</Link>
                   </Typography>
                 </Grid>
               </Grid>

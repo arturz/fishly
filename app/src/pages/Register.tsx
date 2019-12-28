@@ -3,6 +3,7 @@ import { Theme, Container, makeStyles, Avatar, Typography, TextField, Button, Ca
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import ReCAPTCHA from "react-google-recaptcha"
 import fetchPost from '../utils/fetchPost'
+import Alert from '../components/Alert'
 
 const useStyles = makeStyles((theme: Theme) => ({
   '@global': {
@@ -34,6 +35,7 @@ export default () => {
     lastname: ''
   })
   const [captcha, setCaptcha] = useState(null)
+  const [error, setError] = useState(null)
 
   const updateState = key => useCallback(({ target: { value } }) =>
     setState(state => ({
@@ -44,9 +46,16 @@ export default () => {
   const handleSubmit = async event => {
     event.preventDefault()
 
-    console.log(
-      await fetchPost('api/register', { captcha, ...state })
-    )
+    if(state.password !== state.repeatedPassword){
+      setError('Hasła nie są takie same!')
+      return
+    }
+
+    const { error } = await fetchPost('api/account/registration.php', { captcha, ...state })
+    if(error){
+      setError(error)
+      return
+    }
   }
 
   const classes = useStyles({})
@@ -55,6 +64,9 @@ export default () => {
       <Card className={classes.card}>
         <CardContent>
           <form className={classes.form} onSubmit={handleSubmit}>
+            {
+              error && <Alert title="Błąd" handleClose={() => setError(null)}>{ error }</Alert>
+            }
             <Avatar>
               <LockOutlinedIcon />
             </Avatar>

@@ -1,4 +1,12 @@
 <?php
+  /**
+   * Wysyła wiadomość na podany email, z danym tytułem i daną treścią (może zawierać kod HTML).
+   *
+   * @param [string] $to
+   * @param [string] $title
+   * @param [string] $content
+   * @return bool
+   */
   function sendMail($to, $title, $content){
     $from = 'admin@fishly.com';
 

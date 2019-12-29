@@ -2,10 +2,9 @@ import React, { useState, useCallback } from 'react'
 import { Theme, Container, makeStyles, Avatar, Typography, TextField, Button, CardContent, Card } from '@material-ui/core'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import ReCAPTCHA from "react-google-recaptcha"
+import { captchaSitekey } from '../config/captcha'
 import fetchPost from '../utils/fetchPost'
 import Alert from '../components/Alert'
-
-const captchaSitekey = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
 
 const useStyles = makeStyles((theme: Theme) => ({
   '@global': {
@@ -27,7 +26,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }))
 
+enum RegistrationStates {
+  NotRegistered,
+  Requesting,
+  SentMail
+}
+
 export default () => {
+  const [registrationState, setRegistrationState] = useState(RegistrationStates.NotRegistered)
   const [state, setState] = useState({
     login: '',
     password: '',
@@ -45,6 +51,13 @@ export default () => {
       [key]: value
     })), [])
 
+  const updateLogin = updateState('login')
+  const updatePassword = updateState('password')
+  const updateRepeatedPassword = updateState('repeatedPassword')
+  const updateEmail = updateState('email')
+  const updateFirstname = updateState('firstname')
+  const updateLastname = updateState('lastname')
+
   const handleSubmit = async event => {
     event.preventDefault()
 
@@ -53,10 +66,16 @@ export default () => {
       return
     }
 
-    const { error } = await fetchPost('api/account/registration.php', { captcha, ...state })
+    setRegistrationState(RegistrationStates.Requesting)
+    const { error, success } = await fetchPost('api/account/registration.php', { captcha, ...state })
     if(error){
+      setRegistrationState(RegistrationStates.NotRegistered)
       setError(error)
       return
+    }
+
+    if(success){
+      setRegistrationState(RegistrationStates.SentMail)
     }
   }
 
@@ -65,29 +84,46 @@ export default () => {
     <Container maxWidth="xs">
       <Card className={classes.card}>
         <CardContent>
-          <form className={classes.form} onSubmit={handleSubmit}>
-            {
-              error && <Alert title="Błąd" handleClose={() => setError(null)}>{ error }</Alert>
-            }
-            <Avatar>
-              <LockOutlinedIcon />
-            </Avatar>
-            <Typography component="h1" variant="h3" className={classes.title}>
-              Zarejestruj
-            </Typography>
-            <TextField label="Login" onChange={updateState('login')} />
-            <TextField label="Hasło" type="password" onChange={updateState('password')} />
-            <TextField label="Powtórz hasło" type="password" onChange={updateState('repeatedPassword')} />
-            <TextField label="Email" onChange={updateState('email')} />
-            <TextField label="Twoje imię" onChange={updateState('firstname')} />
-            <TextField label="Twoje nazwisko" onChange={updateState('lastname')} />
-            <br />
-            <ReCAPTCHA sitekey={captchaSitekey} onChange={setCaptcha} />
-            <br />
-            <Button variant="contained" color="primary" type="submit">
-              Zarejestruj się
-            </Button>
-          </form>
+        {
+          [RegistrationStates.NotRegistered, RegistrationStates.Requesting].includes(registrationState) ? (
+            <form className={classes.form} onSubmit={handleSubmit}>
+              {
+                error && <Alert title="Błąd" handleClose={() => setError(null)}>{ error }</Alert>
+              }
+              <Avatar>
+                <LockOutlinedIcon />
+              </Avatar>
+              <Typography component="h1" variant="h3" className={classes.title}>
+                Zarejestruj
+              </Typography>
+              <TextField label="Login" onChange={updateLogin} inputProps={{ required: true, minLength: 3 }} />
+              <TextField label="Hasło" type="password" onChange={updatePassword} inputProps={{ required: true, minLength: 3 }} />
+              <TextField label="Powtórz hasło" type="password" onChange={updateRepeatedPassword} inputProps={{ required: true, minLength: 3 }} />
+              <TextField label="Email" type="email" onChange={updateEmail} inputProps={{ required: true, minLength: 3 }} />
+              <TextField label="Imię" onChange={updateFirstname} inputProps={{ required: true, minLength: 3 }} />
+              <TextField label="Nazwisko (opcjonalnie)" onChange={updateLastname} />
+              <br />
+              <ReCAPTCHA sitekey={captchaSitekey} onChange={setCaptcha} />
+              <br />
+              <Button variant="contained" color="primary" type="submit" disabled={registrationState === RegistrationStates.Requesting}>
+                Zarejestruj się
+              </Button>
+            </form>
+          ) : (
+            <form className={classes.form}>
+              <Avatar>
+                <LockOutlinedIcon />
+              </Avatar>
+              <Typography component="h1" variant="h5" className={classes.title}>
+                Mail aktywacyjny wysłany!
+              </Typography>
+              <Typography variant="body1">
+                Sprawdź swojego e-maila "{ state.email }", łącznie z folderem spam, i kliknij w link aktywacyjny, by aktywować konto.
+                <br />
+              </Typography>
+            </form>
+          )
+        }
         </CardContent>
       </Card>
     </Container>

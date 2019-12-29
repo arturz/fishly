@@ -2,6 +2,12 @@
   $captchaUrl = 'https://www.google.com/recaptcha/api/siteverify';
   $captchaSecret = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
 
+  /**
+   * Sprawdza czy captcha jest zweryfikowana przez Google i nie wygasła.
+   *
+   * @param [string] $captcha
+   * @return bool
+   */
   function isValidCaptcha($captcha){
     global $captchaUrl;
     global $captchaSecret;

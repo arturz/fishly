@@ -7,35 +7,34 @@
   if(empty($_POST['captcha']) || !isValidCaptcha($_POST['captcha']))
     throwError('Zła captcha');
 
-  if(empty($_POST['login']))
-    throwError('Brakujący login');
+  if(empty($_POST['login']) || mb_strlen($_POST['login']) < 3)
+    throwError('Zły login');
 
-  if(empty($_POST['password']))
-    throwError('Brakujące hasło');
+  if(empty($_POST['password']) || mb_strlen($_POST['password']) < 3)
+    throwError('Złe hasło');
 
-  if(empty($_POST['email']))
-    throwError('Brakujący e-mail');
+  if(empty($_POST['email']) || mb_strlen($_POST['email']) < 3)
+    throwError('Zły e-mail');
 
-  if(empty($_POST['firstname']))
-    throwError('Brakujące imię');
+  if(empty($_POST['firstname']) || mb_strlen($_POST['firstname']) < 3)
+    throwError('Złe imię');
 
-  if(empty($_POST['lastname']))
-    throwError('Brakujące nazwisko');
-
-  $login = $_POST['login'];
+  $login = mb_substr($_POST['login'], 0, 16);
   $password = $_POST['password'];
-  $email = $_POST['email'];
-  $firstname = $_POST['firstname'];
-  $lastname = $_POST['lastname'];
+  $email = mb_substr($_POST['email'], 0, 32);
+  $firstname = mb_substr($_POST['firstname'], 0, 16);
+  $lastname = empty($_POST['lastname'])
+    ? ''
+    : mb_substr($_POST['lastname'], 0, 24);
   $status = array_search('registration_not_confirmed', $userStatuses);
   
-  $stmt = $pdo->prepare('SELECT * from user where login = ?');
-  $stmt->execute([$login]);
+  $stmt = $pdo->prepare('SELECT * FROM user WHERE login = ? AND status <> ?');
+  $stmt->execute([$login, array_search('deleted', $userStatuses)]);
   if($stmt->fetch())
     throwError('Ten login jest już zajęty');
 
-  $stmt = $pdo->prepare('SELECT * from user where email = ?');
-  $stmt->execute([$email]);
+  $stmt = $pdo->prepare('SELECT * FROM user WHERE email = ? AND status <> ?');
+  $stmt->execute([$email, array_search('deleted', $userStatuses)]);
   if($stmt->fetch())
     throwError('Ten email jest już zajęty');
 

@@ -3,7 +3,7 @@ import { Theme, Container, makeStyles, Avatar, Typography, TextField, Button, Ca
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import ReCAPTCHA from "react-google-recaptcha"
 import { captchaSitekey } from '../config/captcha'
-import fetch from '../utils/fetch'
+import registration from '../api/account/registration'
 import Alert from '../components/Alert'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -67,16 +67,14 @@ export default () => {
     }
 
     setRegistrationState(RegistrationStates.Requesting)
-    const { error, success } = await fetch('api/account/registration.php', { captcha, ...state })
-    if(error){
+    const result = await registration({ captcha, ...state })
+    if('error' in result){
       setRegistrationState(RegistrationStates.Initial)
       setError(error)
       return
     }
 
-    if(success){
-      setRegistrationState(RegistrationStates.SentMail)
-    }
+    setRegistrationState(RegistrationStates.SentMail)
   }
 
   const classes = useStyles({})

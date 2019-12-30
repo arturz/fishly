@@ -2,7 +2,7 @@
   require_once '../core.php';
   require_once './helpers/isValidCaptcha.php';
   require_once './helpers/sendMail.php';
-  require_once './helpers/password.php';
+  require_once './helpers/hashPassword.php';
 
   if(empty($_POST['captcha']) || !isValidCaptcha($_POST['captcha']))
     throwError('Zła captcha');

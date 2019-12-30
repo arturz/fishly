@@ -19,9 +19,6 @@
     ->prepare('UPDATE user SET status = ? WHERE user_id = ?')
     ->execute([$status, $userId]);
 
-  /**
-   * Nic nie robi jeśli jest ON DELETE CASCADE.
-   */
   $pdo
     ->prepare('DELETE FROM registration_confirm_hash WHERE hash = ?')
     ->execute([$hash]);

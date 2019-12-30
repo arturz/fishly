@@ -5,6 +5,10 @@
   $dbuser = 'root';
   $dbpassword = '';
 
+  $isLocalhost = in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']);
+  if(!$isLocalhost)
+    @include('./config.php');
+
   session_start();
   header('Content-type: text/plain; charset=utf-8');
 

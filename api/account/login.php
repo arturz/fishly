@@ -1,6 +1,6 @@
 <?php
   require_once '../core.php';
-  require_once './helpers/password.php';
+  require_once './helpers/verifyPassword.php';
 
   if(empty($_POST['login']))
     throwError('Nie ma loginu');

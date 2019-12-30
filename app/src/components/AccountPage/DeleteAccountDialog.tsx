@@ -1,0 +1,73 @@
+import React, { useState } from 'react'
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, TextField } from '@material-ui/core'
+import deleteAccount from '../../api/account/deleteAccount'
+import { useStateValue } from '../../state'
+
+enum DialogStates {
+  Initial,
+  Requesting,
+  WrongPassword,
+  Deleted
+}
+
+export default ({ handleClose }: { handleClose: () => any }) => {
+  const [dialogState, setDialogState] = useState(DialogStates.Initial)
+  const [password, setPassword] = useState('')
+  const [, dispatch] = useStateValue()
+
+  const handleDeleteClick = async () => {
+    setDialogState(DialogStates.Requesting)
+    const result = await deleteAccount(password)
+    if('error' in result){
+      console.log(result.error)
+      setDialogState(DialogStates.WrongPassword)
+      return
+    }
+
+    setDialogState(DialogStates.Deleted)
+  }
+
+  if(dialogState === DialogStates.Deleted)
+    return (
+      <Dialog open={true} onClose={() => dispatch({ type: 'logOut' })}>
+        <DialogTitle>Konto zostało usunięte.</DialogTitle>
+        <DialogActions>
+          <Button onClick={() => dispatch({ type: 'logOut' })} color="primary" autoFocus>
+            Zamknij
+          </Button>
+        </DialogActions>
+      </Dialog>
+    )
+
+  return (
+    <Dialog open={true} onClose={handleClose}>
+      <DialogTitle>Usuwanie konta</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Musisz podać hasło, by potwierdzić swoją toższamość.
+        </DialogContentText>
+        <TextField
+          autoFocus
+          label="Hasło"
+          margin="dense"
+          type="password"
+          fullWidth
+          value={password}
+          onChange={({ target: { value } }) => setPassword(value)}
+          { ...dialogState === DialogStates.WrongPassword && {
+            error: true,
+            helperText: 'Złe hasło'
+          } }
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleDeleteClick} color="secondary" disabled={dialogState === DialogStates.Requesting}>
+          Usuń konto
+        </Button>
+        <Button onClick={handleClose} color="primary" autoFocus disabled={dialogState === DialogStates.Requesting}>
+          Anuluj
+        </Button>
+      </DialogActions>
+    </Dialog>
+  )
+}

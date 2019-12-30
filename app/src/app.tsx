@@ -6,7 +6,7 @@ import initialState from './initialState'
 import Router from './router'
 
 //@ts-ignore
-__webpack_public_path__ = `${window.STATIC_URL}/app/assets/bundle/`
+//__webpack_public_path__ = `${window.STATIC_URL}/app/assets/bundle/`
 
 const App = () => {
   const reducer = (state, action) => {

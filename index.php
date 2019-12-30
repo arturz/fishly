@@ -20,7 +20,6 @@
     <link rel="stylesheet" href="app/assets/css/app.css" type="text/css">
   </head>
   <script type="text/javascript">
-    var STATIC_URL = 'http://localhost/projekt';
     var app = { 
       user: <?php echo json_encode($user); ?>,
       token: <?php echo json_encode($token); ?>

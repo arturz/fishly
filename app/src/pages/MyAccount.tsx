@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { makeStyles, Container, Typography, Grid, CircularProgress, Card, List, ListItem, CardContent, CardActions, Button, Divider, Theme } from '@material-ui/core'
 import Header from '../components/Header'
 import Main from '../components/Main'
-import RemoveAccountDialog from '../components/AccountPage/RemoveAccountDialog'
+import DeleteAccountDialog from '../components/AccountPage/DeleteAccountDialog'
 import { useStateValue } from '../state'
 
 const statusNames = {
@@ -21,12 +21,12 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export default () => {
   const [{ user }] = useStateValue()
-  const [isRemoveAccountDialogOpen, setRemoveAccountDialogOpen] = useState(false)
+  const [isDeleteAccountDialogOpen, setDeleteAccountDialogOpen] = useState(false)
 
   const classes = useStyles({}) 
 
-  const toggleRemoveAccountDialog = () =>
-    setRemoveAccountDialogOpen(prevState => !prevState)
+  const toggleDeleteAccountDialog = () =>
+    setDeleteAccountDialogOpen(prevState => !prevState)
 
   return (
     <>
@@ -91,7 +91,7 @@ export default () => {
                     </Typography>
                   </ListItem>
                   <Divider />
-                  <ListItem button onClick={toggleRemoveAccountDialog}>
+                  <ListItem button onClick={toggleDeleteAccountDialog}>
                     Usuń konto
                   </ListItem>
                   <Link to="/admin" className={classes.link}>
@@ -105,7 +105,7 @@ export default () => {
           </Grid>
         </Container>
         { 
-          isRemoveAccountDialogOpen && <RemoveAccountDialog onClose={toggleRemoveAccountDialog} />
+          isDeleteAccountDialogOpen && <DeleteAccountDialog handleClose={toggleDeleteAccountDialog} />
         }
       </Main>
     </>

@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { Theme, Container, makeStyles, Avatar, Typography, TextField, Button, CardContent, Card } from '@material-ui/core'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
-import fetch from '../utils/fetch'
+import logIn from '../api/account/logIn'
 import Alert from '../components/Alert'
 import { useStateValue } from '../state'
 
@@ -52,12 +52,14 @@ export default () => {
     event.preventDefault()
 
     setLogInState(LogInStates.Requesting)
-    const { error, user, token } = await fetch('api/account/login.php', state)
+    const result = await logIn(state)
     setLogInState(LogInStates.Initial)
-    if(error){
-      setError(error)
+    if('error' in result){
+      setError(result.error)
       return
     }
+    
+    const { user, token } = result
 
     console.log(user, token)
 

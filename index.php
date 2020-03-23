@@ -1,11 +1,12 @@
 <?php
-  session_start();
+  include_once 'api/User.php';
 
-  if(isset($_SESSION['user']) && isset($_SESSION['token'])){
-    $user = $_SESSION['user'];
-    $token = $_SESSION['token'];
+  $user = new User();
+  if($user->isLogged()){
+    $userData = $user->getUserData();
+    $token = $user->getToken();
   } else {
-    $user = null;
+    $userData = null;
     $token = null;
   }
 ?>
@@ -21,7 +22,7 @@
   </head>
   <script type="text/javascript">
     var app = { 
-      user: <?php echo json_encode($user); ?>,
+      user: <?php echo json_encode($userData); ?>,
       token: <?php echo json_encode($token); ?>
     };
   </script>

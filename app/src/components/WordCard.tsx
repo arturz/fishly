@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { makeStyles, Typography, Card, Theme } from '@material-ui/core'
-import SpeakButton from './WordCard/SpeakButton'
 
 const useStyles = makeStyles((theme: Theme) => ({
   scene: {
@@ -76,7 +75,6 @@ export default ({ original, translated, translatedLanguage }: { original: string
           }
           </Typography>
         </Card>
-        <SpeakButton word={translated} className={classes.speakButton} language={translatedLanguage} />
       </div>
     </div>
   )

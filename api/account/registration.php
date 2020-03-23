@@ -26,15 +26,14 @@
   $lastname = empty($_POST['lastname'])
     ? ''
     : mb_substr($_POST['lastname'], 0, 24);
-  $status = array_search('registration_not_confirmed', $userStatuses);
   
   $stmt = $pdo->prepare('SELECT * FROM user WHERE login = ? AND status <> ?');
-  $stmt->execute([$login, array_search('deleted', $userStatuses)]);
+  $stmt->execute([$login, UserStatuses::getStatusIndex('deleted')]);
   if($stmt->fetch())
     throwError('Ten login jest już zajęty');
 
   $stmt = $pdo->prepare('SELECT * FROM user WHERE email = ? AND status <> ?');
-  $stmt->execute([$email, array_search('deleted', $userStatuses)]);
+  $stmt->execute([$email, UserStatuses::getStatusIndex('deleted')]);
   if($stmt->fetch())
     throwError('Ten email jest już zajęty');
 
@@ -49,7 +48,7 @@
   $hashedPassword = hashPassword($password);
   $pdo
     ->prepare('INSERT INTO user (login, hashed_password, email, firstname, lastname, status, registration_ip) VALUES (?,?,?,?,?,?,?)')
-    ->execute([$login, $hashedPassword, $email, $firstname, $lastname, $status, $_SERVER['REMOTE_ADDR']]);
+    ->execute([$login, $hashedPassword, $email, $firstname, $lastname, UserStatuses::getStatusIndex('registration_not_confirmed'), $_SERVER['REMOTE_ADDR']]);
 
   $userId = $pdo->lastInsertId();
 

@@ -70,9 +70,6 @@ export default () => {
                 { user.email }
                 </Typography>
               </p>
-              <Button variant="contained" color="primary">
-                Zmień e-mail
-              </Button>
               <p>
                 <Typography variant="h6">
                   Status:

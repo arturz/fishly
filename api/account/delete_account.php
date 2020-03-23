@@ -2,15 +2,12 @@
   include_once '../core.php';
   include_once './helpers/verifyPassword.php';
 
-  $user = getUser();
-  if(!$user)
+  $user = new User();
+  if(!$user->isLogged())
     throwError('Zaloguj się');
 
-  /**
-   * Admin usuwa użytkownika - trzeba sprawdzić czy jest adminem i usunąć link aktywacyjny użytkownika (jeśli użytkownik nie jest aktywowany).
-   */
   if(isset($_POST['userId'])){
-    if($user['status'] !== array_search('admin', $userStatuses) && $user['status'] !== array_search('head_admin', $userStatuses))
+    if(UserStatuses::getStatusIndex('admin') !== $user['status'] && UserStatuses::getStatusIndex('headadmin') !== $user['status'])
       throwError('Nie masz uprawnień');
 
     $userIdToDelete = $_POST['userId'];
@@ -19,7 +16,7 @@
      * Zmiana stanu konta na usunięte.
      */
     $stmt = $pdo->prepare('UPDATE user SET status = ? WHERE user_id = ?');
-    $stmt->execute([array_search('deleted', $userStatuses), $userIdToDelete]);
+    $stmt->execute([UserStatuses::getStatusIndex('deleted'), $userIdToDelete]);
     if($stmt->rowCount() === 0)
       throwError('Nie można usunąć');
 
@@ -50,7 +47,7 @@
      * Zmiana stanu konta na usunięte.
      */
     $stmt = $pdo->prepare('UPDATE user SET status = ? WHERE user_id = ?');
-    $stmt->execute([array_search('deleted', $userStatuses), $user['userId']]);
+    $stmt->execute([UserStatuses::getStatusIndex('deleted'), $user['userId']]);
     if($stmt->rowCount() === 0)
       throwError('Nie można usunąć');
       

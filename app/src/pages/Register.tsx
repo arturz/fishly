@@ -68,9 +68,10 @@ export default () => {
 
     setRegistrationState(RegistrationStates.Requesting)
     const result = await registration({ captcha, ...state })
+    console.log(result)
     if('error' in result){
       setRegistrationState(RegistrationStates.Initial)
-      setError(error)
+      setError(result.error)
       return
     }
 
@@ -99,7 +100,7 @@ export default () => {
               <TextField label="Powtórz hasło" type="password" onChange={updateRepeatedPassword} inputProps={{ required: true, minLength: 3 }} />
               <TextField label="Email" type="email" onChange={updateEmail} inputProps={{ required: true, minLength: 3 }} />
               <TextField label="Imię" onChange={updateFirstname} inputProps={{ required: true, minLength: 3 }} />
-              <TextField label="Nazwisko (opcjonalnie)" onChange={updateLastname} />
+              <TextField label="Nazwisko" onChange={updateLastname} />
               <br />
               <ReCAPTCHA sitekey={captchaSitekey} onChange={setCaptcha} />
               <br />
@@ -114,10 +115,6 @@ export default () => {
               </Avatar>
               <Typography component="h1" variant="h5" className={classes.title}>
                 Mail aktywacyjny wysłany!
-              </Typography>
-              <Typography variant="body1">
-                Sprawdź swojego e-maila "{ state.email }", łącznie z folderem spam, i kliknij w link aktywacyjny, by aktywować konto.
-                <br />
               </Typography>
             </form>
           )

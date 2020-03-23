@@ -13,16 +13,15 @@
     throwError('Hash jest błędny');
 
   $userId = $row['user_id'];
-  $status = array_search('user', $userStatuses);
 
   $pdo
     ->prepare('UPDATE user SET status = ? WHERE user_id = ?')
-    ->execute([$status, $userId]);
+    ->execute([UserStatuses::getStatusIndex('user'), $userId]);
 
   $pdo
     ->prepare('DELETE FROM registration_confirm_hash WHERE hash = ?')
     ->execute([$hash]);
 
   header("Refresh:1; url=$url");
-  exit("Aktywowano konto. Zaraz nastąpi przekierowanie...");
+  exit("Aktywuję konto...");
 ?>

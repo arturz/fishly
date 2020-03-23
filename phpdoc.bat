@@ -1,0 +1,1 @@
+php C:\xampp\php\pear\phpDocumentor.phar -d ./api -t ./phpdoc

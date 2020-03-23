@@ -7,7 +7,7 @@
     throwError('Zaloguj się');
 
   if(isset($_POST['userId'])){
-    if(UserStatuses::getStatusIndex('admin') !== $user['status'] && UserStatuses::getStatusIndex('headadmin') !== $user['status'])
+    if(UserStatuses::getStatusIndex('admin') !== $user->status && UserStatuses::getStatusIndex('headadmin') !== $user->status)
       throwError('Nie masz uprawnień');
 
     $userIdToDelete = $_POST['userId'];
@@ -39,7 +39,7 @@
      */
     $passsword = $_POST['password'];
     $stmt = $pdo->prepare('SELECT hashed_password FROM user WHERE user_id = ?');
-    $stmt->execute([$user['userId']]);
+    $stmt->execute([$user->userId]);
     if(!verifyPassword($passsword, $stmt->fetch()['hashed_password']))
       throwError('Podałeś złe hasło.');
 
@@ -47,7 +47,7 @@
      * Zmiana stanu konta na usunięte.
      */
     $stmt = $pdo->prepare('UPDATE user SET status = ? WHERE user_id = ?');
-    $stmt->execute([UserStatuses::getStatusIndex('deleted'), $user['userId']]);
+    $stmt->execute([UserStatuses::getStatusIndex('deleted'), $user->userId]);
     if($stmt->rowCount() === 0)
       throwError('Nie można usunąć');
       

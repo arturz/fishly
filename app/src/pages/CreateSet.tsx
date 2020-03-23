@@ -24,18 +24,7 @@ export default () => {
   let wordsId = useRef(0)
   const [words, setWords] = useState([{ original: '', translated: '', __id: ++wordsId.current }])
 
-  const [originalLanguage, setOriginalLanguage] = useState('pl')
-  const [translatedLanguage, setTranslatedLanguage] = useState('en')
-
   const classes = useStyles({})
-
-  const handleChangeOriginalLanguage = ({ target: { value } }) => {
-    setOriginalLanguage(value)
-  }
-
-  const handleChangeTranslatedLanguage = ({ target: { value } }) => {
-    setTranslatedLanguage(value)
-  }
 
   const handleChangeOriginalWord = index => ({ target: { value } }) => {
     const newWords = [...words]
@@ -79,22 +68,6 @@ export default () => {
             <div className={classes.controls}>
               <TextField label="Nazwa zestawu" />
               <TextField label="Kategoria" />
-              <FormControl>
-                <InputLabel htmlFor="original-language">Z języka</InputLabel>
-                <Select native value={originalLanguage} onChange={handleChangeOriginalLanguage} inputProps={{ id: 'original-language' }}>
-                  <option value="pl">Polski</option>
-                  <option value="en">Angielski</option>
-                  <option value="de">Niemiecki</option>
-                </Select>
-              </FormControl>
-              <FormControl>
-                <InputLabel htmlFor="translated-language">Na język</InputLabel>
-                <Select native value={translatedLanguage} onChange={handleChangeTranslatedLanguage} inputProps={{ id: 'translated-language' }}>
-                  <option value="pl">Polski</option>
-                  <option value="en">Angielski</option>
-                  <option value="de">Niemiecki</option>
-                </Select>
-              </FormControl>
             </div>
             <Typography variant="h5" gutterBottom>Dodaj fiszki</Typography>
             <Grid container direction="column" className={classes.wordsContainer} spacing={1}>

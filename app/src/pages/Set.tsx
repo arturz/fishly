@@ -113,7 +113,7 @@ export default () => {
                 </Grid>
                 <Grid item>
                   <Typography variant="body2">
-                    Autor: <Link to={`/account/${set.login}`} className={classes.link}>{ set.login }</Link>
+                    Autor: <Link to={`/account/${set.user_id}`} className={classes.link}>{ set.login }</Link>
                   </Typography>
                 </Grid>
               </Grid>

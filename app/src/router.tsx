@@ -33,7 +33,7 @@ export default () => {
           <Route path="/createset">
             <CreateSet />
           </Route>
-          <Route path="/account/:login">
+          <Route path="/account/:userId">
             <Account />
           </Route>
           <Route path="/account">
@@ -67,7 +67,7 @@ export default () => {
           <Route path="/set/:id">
             <Set />
           </Route>
-          <Route path="/account/:login">
+          <Route path="/account/:userId">
             <Account />
           </Route>
           <Route path="*">

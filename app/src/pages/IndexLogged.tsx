@@ -11,6 +11,7 @@ import sets from '../mocks/sets'
 import findSets from '../api/set/findSets'
 import getSavedSets from '../api/set/saved/getSavedSets'
 import Find from '../components/IndexLogged/Find'
+import getCreatedSets from '../api/set/getCreatedSets'
 
 const useStyles = makeStyles((theme: Theme) => ({
   hello: {
@@ -39,6 +40,11 @@ export default () => {
     getSavedSets().then(setSavedSets)
   }, [])
 
+  const [createdSets, setCreatedSets] = useState([])
+  useEffect(() => {
+    getCreatedSets().then(setCreatedSets)
+  }, [])
+
   const classes = useStyles({})
   return (
     <>
@@ -64,9 +70,15 @@ export default () => {
           <Typography variant="h5" gutterBottom>
             Twoje zestawy
           </Typography>
-          <Typography variant="body1" gutterBottom>
-            brak
-          </Typography>
+          {createdSets.length === 0 
+            ? <Typography variant="body1" gutterBottom>brak</Typography>
+            : <div className={classes.grouppedSets}>
+                {createdSets.map(({ name, subject, set_id }) => (
+                  <Link to={`/set/${set_id}`} key={set_id}>
+                    <Set key={name} name={name} subject={subject} />
+                  </Link>
+                ))}
+              </div>}
           <Link to="/createset" className={classes.link}>
             <Button variant="outlined" color="primary">
               Stwórz nowy zestaw

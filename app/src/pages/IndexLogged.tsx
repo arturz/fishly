@@ -15,7 +15,8 @@ import getCreatedSets from '../api/set/getCreatedSets'
 
 const useStyles = makeStyles((theme: Theme) => ({
   hello: {
-    margin: theme.spacing(8, 0)
+    margin: theme.spacing(8, 0),
+    fontWeight: 500
   }, 
   grouppedSets: {
     paddingBottom: theme.spacing(4),

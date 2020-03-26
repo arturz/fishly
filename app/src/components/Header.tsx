@@ -5,7 +5,8 @@ import RightPanel from './Header/RightPanel'
 
 const useStyles = makeStyles(theme => ({
   title: {
-    flexGrow: 1
+    flexGrow: 1,
+    fontSize: '2rem'
   },
   link: {
     color: theme.palette.common.white,

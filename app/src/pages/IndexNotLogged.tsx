@@ -8,14 +8,22 @@ import Main from '../components/Main'
 const useStyles = makeStyles(theme => ({
   text: {
     textAlign: 'center',
-    marginBottom: theme.spacing(8)
+    marginBottom: theme.spacing(8),
+    fontWeight: 500,
+    fontSize: '8rem'
   },
   jumbotron: {
-    margin: theme.spacing(16, 0, 8)
+    margin: theme.spacing(16, 0)
   },
   link: { 
     color: 'unset',
     textDecoration: 'unset'
+  },
+  latest: {
+    display: 'flex',
+    justifyContent: 'center',
+    color: theme.palette.grey[500],
+    fontWeight: 300
   }
 }))
 
@@ -54,6 +62,9 @@ export default () => {
             </Stepper>
           </Container>
         </div>
+        <Container maxWidth="md" className={classes.latest}>
+          <Typography variant="h5" className={classes.latest}>Ostatnio dodane zestawy</Typography>
+        </Container>
       </Main>
     </>
   )

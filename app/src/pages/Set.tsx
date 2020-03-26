@@ -4,7 +4,6 @@ import Main from '../components/Main'
 import { makeStyles, Container, Typography, Grid, CircularProgress, Card, List, ListItem, CardContent, CardActions, Button, Divider, Theme } from '@material-ui/core'
 import { useParams, Link } from 'react-router-dom'
 import WordCard from '../components/WordCard'
-import sets from '../mocks/sets'
 import getSet from '../api/set/getSet'
 import toggleSavedSet from '../api/set/saved/toggleSavedSet'
 
@@ -27,8 +26,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: theme.palette.primary.main
   }
 }))
-
-enum SavedStatus { Unknown, Unsaved, Changing, Saved }
 
 export default () => {
   const [set, setSet] = useState(null)
@@ -103,16 +100,12 @@ export default () => {
         <Container maxWidth="md">
           <Grid container spacing={3} direction="row-reverse">
             <Grid item xs={12} md={8}>
-              <Grid container justify="space-between" alignItems="flex-end">
+              <Grid container justify="space-between" alignItems="center">
                 <Grid item>
-                  <Typography variant="h5">
-                  {
-                    set.name
-                  }
-                  </Typography>
+                  <Typography variant="h5">{ set.name } </Typography>
                 </Grid>
                 <Grid item>
-                  <Typography variant="body2">
+                  <Typography variant="subtitle1">
                     Autor: <Link to={`/account/${set.user_id}`} className={classes.link}>{ set.login }</Link>
                   </Typography>
                 </Grid>
@@ -125,10 +118,10 @@ export default () => {
                     key={word.original+word.translated}
                   />
                   <div className={classes.controls}>
-                    <Button variant="contained" color="primary" onClick={previousWord} disabled={currentWordIndex === 0}>
+                    <Button variant="contained" color="primary" size="large" onClick={previousWord} disabled={currentWordIndex === 0}>
                       Poprzednia
                     </Button>
-                    <Button variant="contained" color="primary" onClick={nextWord} disabled={currentWordIndex === set.words.length - 1}>
+                    <Button variant="contained" color="primary" size="large" onClick={nextWord} disabled={currentWordIndex === set.words.length - 1}>
                       Następna
                     </Button>
                   </div>
@@ -144,29 +137,17 @@ export default () => {
                     </Typography>
                   </ListItem>
                   <Divider />
-                  {
-                    set.words.map(({ original }, index) =>
-                      <ListItem button onClick={() => setCurrentWordIndex(index)} selected={index === currentWordIndex} key={index}>
-                      { 
-                        original
-                      }
-                      </ListItem>
-                    )
-                  }
+                  {set.words.map(({ original }, index) =>
+                    <ListItem button onClick={() => setCurrentWordIndex(index)} selected={index === currentWordIndex} key={index}> { original } </ListItem>
+                  )}
                   <ListItem>
                     <Grid container justify="space-between">
-                      {
-                        set.saved ? (
-                          <Button variant="outlined" onClick={toggleSavedState} size="small" disabled={saveTransform}>
-                            Usuń z zapisanych
-                          </Button> 
-                        ) : (
-                          <Button variant="outlined" onClick={toggleSavedState} size="small" disabled={saveTransform}>
-                            Zapisz
-                          </Button> 
-                        )
-                      }
-                      <Button variant="outlined" size="small">
+                      {set.saved ? (
+                        <Button variant="outlined" onClick={toggleSavedState} size="small" color="primary" disabled={saveTransform}>Usuń z zapisanych</Button> 
+                      ) : (
+                        <Button variant="outlined" onClick={toggleSavedState} size="small" color="primary" disabled={saveTransform}>Zapisz</Button> 
+                      )}
+                      <Button variant="outlined" size="small" color="secondary">
                         Zgłoś
                       </Button>
                     </Grid>

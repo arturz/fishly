@@ -25,7 +25,7 @@ export default () => {
   const [{ user }] = useStateValue()
   const { userId } = useParams()
 
-  const isSelf = user.userId === userId
+  const isSelf = (user && user.userId) === userId
 
   const [account, setAccount] = useState(null)
 

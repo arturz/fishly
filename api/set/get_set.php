@@ -17,14 +17,19 @@
   }
 
   $set['saved'] = false;
+  $set['reported'] = false;
 
   $user = new User();
   if($user->isLogged()){
     $stmt = $pdo->prepare("SELECT * FROM `saved_set` WHERE set_id = ? AND user_id = ?");
     $stmt->execute([$setId, $user->userId]);
-
     if($stmt->fetch())
       $set['saved'] = true;
+
+    $stmt = $pdo->prepare("SELECT * FROM `reported_set` WHERE set_id = ? AND user_id = ?");
+    $stmt->execute([$setId, $user->userId]);
+    if($stmt->fetch())
+      $set['reported'] = true;
   }
   
   echo json_encode($set);

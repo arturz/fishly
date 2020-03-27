@@ -6,6 +6,7 @@ import { useParams, Link } from 'react-router-dom'
 import WordCard from '../components/WordCard'
 import getSet from '../api/set/getSet'
 import toggleSavedSet from '../api/set/saved/toggleSavedSet'
+import reportSet from '../api/set/reportSet'
 
 const useStyles = makeStyles((theme: Theme) => ({
   leftPanel: {
@@ -16,7 +17,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     justifyContent: 'center',
     padding: theme.spacing(4, 0, 1)
   },
-  controls: {
+  navigation: {
     display: 'flex',
     justifyContent: 'space-between',
     paddingTop: theme.spacing(2)
@@ -24,6 +25,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   link: {
     textDecoration: 'none',
     color: theme.palette.primary.main
+  },
+  controls: {
+    '& > *': { marginTop: theme.spacing(1) }
   }
 }))
 
@@ -74,11 +78,13 @@ export default () => {
   const toggleSavedState = async () => {
     setSaveTransform(true)
     const { toggled } = await toggleSavedSet(set.set_id)
-    setSet({
-      ...set,
-      saved: toggled
-    })
+    setSet({ ...set, saved: toggled })
     setSaveTransform(false)
+  }
+
+  const report = async () => {
+    await reportSet(set.set_id)
+    setSet({ ...set, reported: true })
   }
 
   if(set === null)
@@ -117,7 +123,7 @@ export default () => {
                     translated={word.translated}
                     key={word.original+word.translated}
                   />
-                  <div className={classes.controls}>
+                  <div className={classes.navigation}>
                     <Button variant="contained" color="primary" size="large" onClick={previousWord} disabled={currentWordIndex === 0}>
                       Poprzednia
                     </Button>
@@ -141,15 +147,13 @@ export default () => {
                     <ListItem button onClick={() => setCurrentWordIndex(index)} selected={index === currentWordIndex} key={index}> { original } </ListItem>
                   )}
                   <ListItem>
-                    <Grid container justify="space-between">
-                      {set.saved ? (
-                        <Button variant="outlined" onClick={toggleSavedState} size="small" color="primary" disabled={saveTransform}>Usuń z zapisanych</Button> 
-                      ) : (
-                        <Button variant="outlined" onClick={toggleSavedState} size="small" color="primary" disabled={saveTransform}>Zapisz</Button> 
-                      )}
-                      <Button variant="outlined" size="small" color="secondary">
-                        Zgłoś
-                      </Button>
+                    <Grid container justify="space-between" className={classes.controls}>
+                      {set.saved
+                        ? <Button variant="outlined" onClick={toggleSavedState} size="small" color="primary" disabled={saveTransform}>Usuń z zapisanych</Button> 
+                        : <Button variant="outlined" onClick={toggleSavedState} size="small" color="primary" disabled={saveTransform}>Zapisz</Button>}
+                      {set.reported 
+                        ? <Button variant="outlined" size="small" color="secondary" disabled>Zgłoszono</Button>
+                        : <Button variant="outlined" size="small" color="secondary" onClick={report}>Zgłoś</Button>}
                     </Grid>
                   </ListItem>
                 </List>

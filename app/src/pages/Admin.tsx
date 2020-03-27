@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 import Header from '../components/Header'
 import Main from '../components/Main'
 import { makeStyles, Container, Typography, Grid, CircularProgress, Card, List, ListItem, CardContent, CardActions, Button, Divider, Theme } from '@material-ui/core'
-import sets from '../mocks/sets'
-import users from '../mocks/users'
 import getAccounts from '../api/account/admin/getAccounts'
+import getReportedSets from '../api/set/admin/getReportedSets'
+import deleteReport from '../api/set/admin/deleteReport'
 import statuses from '../utils/statuses'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -26,8 +26,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }))
 
-const reported = [sets[0]]
-
 export default () => {
   const classes = useStyles({})
 
@@ -35,6 +33,16 @@ export default () => {
   useEffect(() => {
     getAccounts().then(setAccounts)
   }, [])
+
+  const [reportedSets, setReportedSets] = useState(null)
+  useEffect(() => {
+    getReportedSets().then(setReportedSets)
+  }, [])
+
+  const delReport = (set_id: number) => {
+    deleteReport(set_id)
+    setReportedSets(reportedSets.filter(reportedSet => reportedSet.set_id !== set_id))
+  }
 
   return (
     <>
@@ -50,16 +58,12 @@ export default () => {
                 Zgłoszone fiszki
               </Typography>
               <List className={classes.list} dense>
-              {
-                reported.map(({ name, subject, id }) => (
-                  <ListItem className={classes.listRow} key={id}>
-                    <Link to={`/set/${id}`} className={classes.link} target="_blank">
-                      <span>{ name } ({ subject })</span>
-                    </Link> 
-                    <Button size="small" variant="outlined" color="primary">Usuń zgłoszenie</Button>
-                  </ListItem>
-                ))
-              }
+              {reportedSets === null || reportedSets.map(({ set_id, name }) =>
+                <ListItem className={classes.listRow} key={set_id}>
+                  <Link to={`/set/${set_id}`} className={classes.link} target="_blank">{ name }</Link> 
+                  <Button size="small" variant="outlined" color="primary" onClick={() => delReport(set_id)}>Usuń zgłoszenie</Button>
+                </ListItem>
+              )}
               </List>
             </Grid> 
             <Grid item xs={12} lg={6}>

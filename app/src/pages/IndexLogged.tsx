@@ -65,7 +65,7 @@ export default () => {
             ? <Typography variant="body1" gutterBottom>brak</Typography>
             : <SetsGroup sets={createdSets} />}
           <Link to="/createset" className={classes.link}>
-            <Button variant="outlined" color="primary">
+            <Button variant="outlined" color="primary" size="large">
               Stwórz nowy zestaw
             </Button>
           </Link>

@@ -107,7 +107,7 @@ export default () => {
             <Typography variant="body1" gutterBottom>
               Ilość fiszek w zestawie: { words.length - 1 }
             </Typography>
-            <Button variant="contained" color="primary" disabled={submitting} type="submit">
+            <Button variant="contained" color="primary" disabled={submitting} type="submit" size="large">
               Zapisz zestaw
             </Button>
           </form>

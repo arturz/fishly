@@ -7,6 +7,7 @@ import WordCard from '../components/WordCard'
 import getSet from '../api/set/getSet'
 import toggleSavedSet from '../api/set/saved/toggleSavedSet'
 import reportSet from '../api/set/reportSet'
+import { useStateValue } from '../state'
 
 const useStyles = makeStyles((theme: Theme) => ({
   leftPanel: {
@@ -83,9 +84,12 @@ export default () => {
   }
 
   const report = async () => {
-    await reportSet(set.set_id)
-    setSet({ ...set, reported: true })
+    const { success } = await reportSet(set.set_id)
+    setSet({ ...set, reported: Boolean(success) })
   }
+
+  const [{ user }] = useStateValue()
+  const logged = user !== null
 
   if(set === null)
     return (
@@ -148,12 +152,23 @@ export default () => {
                   )}
                   <ListItem>
                     <Grid container justify="space-between" className={classes.controls}>
-                      {set.saved
-                        ? <Button variant="outlined" onClick={toggleSavedState} size="small" color="primary" disabled={saveTransform}>Usuń z zapisanych</Button> 
-                        : <Button variant="outlined" onClick={toggleSavedState} size="small" color="primary" disabled={saveTransform}>Zapisz</Button>}
-                      {set.reported 
-                        ? <Button variant="outlined" size="small" color="secondary" disabled>Zgłoszono</Button>
-                        : <Button variant="outlined" size="small" color="secondary" onClick={report}>Zgłoś</Button>}
+                      {logged
+                        ? <>
+                          {set.saved
+                            ? <Button variant="outlined" onClick={toggleSavedState} size="small" color="primary" disabled={saveTransform}>Usuń z zapisanych</Button> 
+                            : <Button variant="outlined" onClick={toggleSavedState} size="small" color="primary" disabled={saveTransform}>Zapisz</Button>}
+                          {set.reported 
+                            ? <Button variant="outlined" size="small" color="secondary" disabled>Zgłoszono</Button>
+                            : <Button variant="outlined" size="small" color="secondary" onClick={report}>Zgłoś</Button>}
+                          </>
+                        : <>
+                            <Link to="/login" className={classes.link}>
+                              <Button variant="outlined" size="small" color="primary">Zapisz</Button>
+                            </Link>
+                            <Link to="/login" className={classes.link}>
+                              <Button variant="outlined" size="small" color="secondary">Zgłoś</Button>
+                            </Link>
+                          </>}
                     </Grid>
                   </ListItem>
                 </List>

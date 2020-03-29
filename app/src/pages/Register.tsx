@@ -5,6 +5,8 @@ import ReCAPTCHA from "react-google-recaptcha"
 import { captchaSitekey } from '../config/captcha'
 import registration from '../api/account/registration'
 import Alert from '../components/Alert'
+import Header from '../components/Header'
+import Main from '../components/Main'
 
 const useStyles = makeStyles((theme: Theme) => ({
   '@global': {
@@ -12,18 +14,20 @@ const useStyles = makeStyles((theme: Theme) => ({
       backgroundColor: theme.palette.background.paper
     }
   },
-  card: {
-    margin: theme.spacing(8, 0)
-  },
-  title: {
-    margin: theme.spacing(2, 0)
-  },
-  form: {
+  card: { margin: theme.spacing(8, 0) },
+  title: { margin: theme.spacing(2, 0) },
+  main: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    margin: theme.spacing(2)
-  }
+    paddingTop: theme.spacing(4)
+  },
+  textFields: {
+    '& > *': { marginBottom: theme.spacing(1) },
+    '& > *:last-of-type': { marginBottom: theme.spacing(3) }
+  },
+  gutterBottom: { marginBottom: theme.spacing(2) },
+  link: { textDecoration: 'none', color: theme.palette.primary.main }
 }))
 
 enum RegistrationStates {
@@ -80,47 +84,46 @@ export default () => {
 
   const classes = useStyles({})
   return (
-    <Container maxWidth="xs">
-      <Card className={classes.card}>
-        <CardContent>
-        {
-          [RegistrationStates.Initial, RegistrationStates.Requesting].includes(registrationState) ? (
-            <form className={classes.form} onSubmit={handleSubmit}>
-              {
-                error && <Alert title="Błąd" handleClose={() => setError(null)}>{ error }</Alert>
-              }
-              <Avatar>
-                <LockOutlinedIcon />
-              </Avatar>
-              <Typography component="h1" variant="h3" className={classes.title}>
-                Zarejestruj
-              </Typography>
-              <TextField label="Login" onChange={updateLogin} inputProps={{ required: true, minLength: 3 }} />
-              <TextField label="Hasło" type="password" onChange={updatePassword} inputProps={{ required: true, minLength: 3 }} />
-              <TextField label="Powtórz hasło" type="password" onChange={updateRepeatedPassword} inputProps={{ required: true, minLength: 3 }} />
-              <TextField label="Email" type="email" onChange={updateEmail} inputProps={{ required: true, minLength: 3 }} />
-              <TextField label="Imię" onChange={updateFirstname} inputProps={{ required: true, minLength: 3 }} />
-              <TextField label="Nazwisko" onChange={updateLastname} />
-              <br />
-              <ReCAPTCHA sitekey={captchaSitekey} onChange={setCaptcha} />
-              <br />
-              <Button variant="contained" color="primary" type="submit" disabled={registrationState === RegistrationStates.Requesting}>
-                Zarejestruj się
-              </Button>
-            </form>
-          ) : (
-            <form className={classes.form}>
-              <Avatar>
-                <LockOutlinedIcon />
-              </Avatar>
-              <Typography component="h1" variant="h5" className={classes.title}>
-                Mail aktywacyjny wysłany!
-              </Typography>
-            </form>
-          )
-        }
-        </CardContent>
-      </Card>
-    </Container>
+    <>
+      <Header />
+      <Main>
+        <Container maxWidth="xs">
+          <Card className={classes.card}>
+            <CardContent className={classes.main}>
+              { error && <Alert title="Błąd" handleClose={() => setError(null)}>{ error }</Alert> }
+              { [RegistrationStates.Initial, RegistrationStates.Requesting].includes(registrationState)
+                ? <>
+                    <Avatar>
+                      <LockOutlinedIcon />
+                    </Avatar>
+                    <Typography component="h1" variant="h3" className={classes.title}>Zarejestruj</Typography>
+                    <form onSubmit={handleSubmit}>
+                      <div className={classes.textFields}>
+                        <TextField fullWidth label="Login" onChange={updateLogin} inputProps={{ required: true, minLength: 3 }} />
+                        <TextField fullWidth label="Hasło" type="password" onChange={updatePassword} inputProps={{ required: true, minLength: 3 }} />
+                        <TextField fullWidth label="Powtórz hasło" type="password" onChange={updateRepeatedPassword} inputProps={{ required: true, minLength: 3 }} />
+                        <TextField fullWidth label="Email" type="email" onChange={updateEmail} inputProps={{ required: true, minLength: 3 }} />
+                        <TextField fullWidth label="Imię" onChange={updateFirstname} inputProps={{ required: true, minLength: 3 }} />
+                        <TextField fullWidth label="Nazwisko" onChange={updateLastname} />
+                      </div>
+                      <div>
+                        <ReCAPTCHA sitekey={captchaSitekey} onChange={setCaptcha} className={classes.gutterBottom} />
+                        <Button fullWidth variant="contained" size="large" color="primary" type="submit" disabled={registrationState === RegistrationStates.Requesting}>
+                          Zarejestruj się
+                        </Button>
+                      </div>
+                    </form>
+                  </>
+                : <>
+                    <Avatar>
+                      <LockOutlinedIcon />
+                    </Avatar>
+                    <Typography component="h1" variant="h5">Mail aktywacyjny wysłany!</Typography>
+                  </>}
+            </CardContent>
+          </Card>
+        </Container>
+      </Main>
+    </>
   )
 }

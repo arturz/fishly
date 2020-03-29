@@ -63,7 +63,7 @@ export default () => {
               <Step>
                 <StepLabel>
                   <Link to="/register" className={classes.link}>
-                    <Button variant="contained" color="primary">
+                    <Button variant="contained" color="primary" size="large">
                       Załóż konto
                     </Button>
                   </Link>

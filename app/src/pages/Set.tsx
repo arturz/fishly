@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import Header from '../components/Header'
 import Main from '../components/Main'
-import { makeStyles, Container, Typography, Grid, CircularProgress, Card, List, ListItem, CardContent, CardActions, Button, Divider, Theme } from '@material-ui/core'
+import { makeStyles, Container, Typography, Grid, CircularProgress, Card, List, ListItem, CardContent, CardActions, Button, Divider, Theme, FormControlLabel, Switch } from '@material-ui/core'
 import { useParams, Link } from 'react-router-dom'
-import WordCard from '../components/WordCard'
+import WordCard from '../components/SetPage/WordCard'
 import getSet from '../api/set/getSet'
 import toggleSavedSet from '../api/set/saved/toggleSavedSet'
 import reportSet from '../api/set/reportSet'
@@ -36,6 +36,17 @@ export default () => {
   const [set, setSet] = useState(null)
   const [currentWordIndex, setCurrentWordIndex] = useState(0)
   const { id } = useParams()
+  const [reversedLanguage, setReversedLanguage] = useState(localStorage.getItem(`${id}_reversed`) === '1')
+
+  const reverseLanguage = (state) => {
+    setReversedLanguage(state)
+    if(state){
+      localStorage.setItem(`${id}_reversed`, '1')
+      return
+    }
+    
+    localStorage.removeItem(`${id}_reversed`)
+  }
 
   const classes = useStyles({})
 
@@ -96,7 +107,6 @@ export default () => {
 
   const [{ user }] = useStateValue()
   const logged = user !== null
-
   if(set === null)
     return (
       <>
@@ -128,11 +138,7 @@ export default () => {
               </Grid>
               <Grid container className={classes.wordCardContainer}>
                 <Grid item md={10} xs={12}>
-                  <WordCard 
-                    original={word.original}
-                    translated={word.translated}
-                    key={word.original+word.translated}
-                  />
+                  <WordCard reversedLanguage={reversedLanguage} original={word.original} translated={word.translated} key={(reversedLanguage ? '1' : '0')+word.original+word.translated} />
                   <div className={classes.navigation}>
                     <Button variant="contained" color="primary" size="large" onClick={previousWord} disabled={currentWordIndex === 0}>
                       Poprzednia
@@ -153,9 +159,22 @@ export default () => {
                     </Typography>
                   </ListItem>
                   <Divider />
-                  {set.words.map(({ original }, index) =>
-                    <ListItem button onClick={() => setCurrentWordIndex(index)} selected={index === currentWordIndex} key={index}> { original } </ListItem>
-                  )}
+                  <ListItem>
+                    <FormControlLabel
+                      control={
+                        <Switch checked={reversedLanguage} onChange={({ target: { checked } }) => reverseLanguage(checked)} color="secondary" />
+                      }
+                      label="Odwróć języki"
+                    />
+                  </ListItem>
+                  <Divider />
+                  {reversedLanguage
+                    ? set.words.map(({ translated }, index) =>
+                        <ListItem button onClick={() => setCurrentWordIndex(index)} selected={index === currentWordIndex} key={index}> { translated } </ListItem>
+                      )
+                    : set.words.map(({ original }, index) =>
+                        <ListItem button onClick={() => setCurrentWordIndex(index)} selected={index === currentWordIndex} key={index}> { original } </ListItem>
+                      )}
                   <ListItem>
                     <Grid container justify="space-between" className={classes.controls}>
                       {logged

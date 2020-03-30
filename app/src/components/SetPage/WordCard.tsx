@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { makeStyles, Typography, Card, Theme } from '@material-ui/core'
+import SpeakButton from './SpeakButton'
 
 const useStyles = makeStyles((theme: Theme) => ({
   scene: {
@@ -43,8 +44,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }))
 
-export default ({ original, translated }: { original: string, translated: string }) => {
-  const [flipped, setFlipped] = useState(false)
+export default ({ original, translated, reversedLanguage }: { original: string, translated: string, reversedLanguage: boolean }) => {
+  const [flipped, setFlipped] = useState(reversedLanguage)
   const classes = useStyles({ flipped })
 
   const handleKeyDown = useCallback(({ code, repeat }) =>
@@ -75,6 +76,7 @@ export default ({ original, translated }: { original: string, translated: string
           }
           </Typography>
         </Card>
+        <SpeakButton word={translated} className={classes.speakButton} language="en" />
       </div>
     </div>
   )

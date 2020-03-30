@@ -5,3 +5,5 @@ RewriteRule ^ - [L]
 
 # Fallback all other routes to index.php
 RewriteRule ^ index.php [L]
+
+AddType application/x-httpd-php73 .php

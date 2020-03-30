@@ -116,7 +116,7 @@ export default () => {
     if(!confirm('Na pewno chcesz usunąć?'))
       return
 
-    const { success } = await deleteSet(id)
+    const { success } = await deleteSet(+id)
     if(success)
       history.replace(`/`)
     else 

@@ -6,6 +6,7 @@ import createSet from '../api/set/createSet'
 import editSet from '../api/set/editSet'
 import { useHistory, useParams } from 'react-router-dom'
 import getSet from '../api/set/getSet'
+import deleteSet from '../api/set/deleteSet'
 import Word from '../components/CreateSetPage/Word'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -16,14 +17,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     maxWidth: '400px'
   },
-  wordsContainer: {
+  gutterBottom: {
     marginBottom: theme.spacing(2)
   },
   wordsRow: {
     '& > *': {
       marginRight: theme.spacing(1)
     }
-  }
+  },
 }))
 
 export default () => {
@@ -111,6 +112,17 @@ export default () => {
 
   console.log(words)
 
+  const delSet = async () => {
+    if(!confirm('Na pewno chcesz usunąć?'))
+      return
+
+    const { success } = await deleteSet(id)
+    if(success)
+      history.replace(`/`)
+    else 
+      alert('Błąd')
+  }
+
   if(editing && !fetchedSet)
     return <>
       <Header />
@@ -131,7 +143,7 @@ export default () => {
               <TextField label="Kategoria" fullWidth inputProps={{ required: true, minLength: 3, maxLength: 20 }} onChange={({ target: { value }}) => setSubject(value)} value={subject} />
             </div>
             <Typography variant="h5" gutterBottom>Dodaj fiszki</Typography>
-            <Grid container direction="column" className={classes.wordsContainer} spacing={1}>
+            <Grid container direction="column" className={classes.gutterBottom} spacing={1}>
               {words.map(({ original, translated, word_id }) => (
                 <Grid item key={word_id} container alignItems="flex-end" className={classes.wordsRow}>
                   <Word original={original} translated={translated} onChange={handleChangeWord(word_id)} />
@@ -142,9 +154,11 @@ export default () => {
             <Typography variant="body1" gutterBottom>
               Ilość fiszek w zestawie: { words.length - 1 }
             </Typography>
-            <Button variant="contained" color="primary" disabled={submitting} type="submit" size="large">
+            <Button variant="contained" color="primary" disabled={submitting} type="submit" size="large" className={classes.gutterBottom}>
               Zapisz zestaw
             </Button>
+            <br />
+            {editing && <Button variant="outlined" color="secondary" disabled={submitting} onClick={delSet}>Usuń zestaw</Button>}
           </form>
         </Container>
       </Main>

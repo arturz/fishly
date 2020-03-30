@@ -7,7 +7,7 @@
 
   $userId = $user->userId;
 
-  if(empty($_POST['name']) || empty($_POST['subject']) || empty($_POST['words']) || !isset($_POST['setId']))
+  if(!isset($_POST['setId']))
     throwError('Brakujące dane');
 
   $setId = $_POST['setId'];
@@ -26,22 +26,14 @@
 
   $stmt = $pdo->prepare("DELETE FROM `word` WHERE set_id = ?");
   $stmt->execute([$setId]);
+
+  $stmt = $pdo->prepare("DELETE FROM `saved_set` WHERE set_id = ?");
+  $stmt->execute([$setId]);
+
+  $stmt = $pdo->prepare("DELETE FROM `reported_set` WHERE set_id = ?");
+  $stmt->execute([$setId]);
  
-  $name = mb_substr($_POST['name'], 0, 50);
-  $subject = mb_substr($_POST['subject'], 0, 20);
-  $words = $_POST['words'];
-
-  $pdo
-    ->prepare('INSERT INTO `set` (set_id, created_by, name, subject) VALUES (?,?,?,?)')
-    ->execute([$setId, $userId, $name, $subject]);
-
-  foreach($words as $word){
-    $pdo
-      ->prepare('INSERT INTO word (set_id, original, translated) VALUES (?,?,?)')
-      ->execute([$setId, $word['original'], $word['translated']]);
-  }
-
   $pdo->commit();
 
-  echo json_encode([ 'setId' => $setId ]);
+  success();
 ?>

@@ -28,6 +28,11 @@
   </script>
   <body>
     <div id="app"></div>
-    <script type="text/javascript" src="./app/assets/bundle/main.bundle.js" ></script>
+<?php
+  if(in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']))
+    echo '<script type="text/javascript" src="./app/assets/bundle/main.bundle.js"></script>';
+  else
+    echo '<script type="text/javascript" src="/app/assets/bundle/main.bundle.js"></script>';
+?>
   </body>
 </html>

@@ -1,13 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useLayoutEffect, memo } from 'react'
 import Set from '../../types/Set'
 import Header from '../../components/Header'
 import Main from '../../components/Main'
 import { makeStyles, Container, Typography, Grid, CircularProgress, Card, List, ListItem, CardContent, CardActions, Button, Divider, Theme, FormControlLabel, Switch } from '@material-ui/core'
+import Rating from '@material-ui/lab/Rating'
 import { Link } from 'react-router-dom'
 import WordCard from '../../components/SetPage/WordCard'
 import toggleSavedSet from '../../api/set/saved/toggleSavedSet'
 import reportSet from '../../api/set/reportSet'
 import { useStateValue } from '../../state'
+import Item from './Item'
 
 const useStyles = makeStyles((theme: Theme) => ({
   leftPanel: {
@@ -21,6 +23,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   navigation: {
     display: 'flex',
     justifyContent: 'space-between',
+    alignItems: 'center',
     paddingTop: theme.spacing(2)
   },
   link: {
@@ -39,17 +42,37 @@ interface Props {
 }
 
 export default ({ set, id, setSet }: Props) => {
+  //name of localStorage keys
+  const REVERSED_KEY = `${id}_reversed_mode`
+  const SHOW_ONLY_STARRED_KEY = `${id}_only_starred_key`
+  const STARS_LIST_KEY = `${id}_stars`
+  
   const [currentWordIndex, setCurrentWordIndex] = useState(0)
-  const [reversedLanguage, setReversedLanguage] = useState(localStorage.getItem(`${id}_reversed`) === '1')
 
+  const [reversedLanguage, setReversedLanguage] = useState(localStorage.getItem(REVERSED_KEY) === '1')
   const reverseLanguage = (state) => {
     setReversedLanguage(state)
     if(state){
-      localStorage.setItem(`${id}_reversed`, '1')
+      localStorage.setItem(REVERSED_KEY, '1')
       return
     }
     
-    localStorage.removeItem(`${id}_reversed`)
+    localStorage.removeItem(REVERSED_KEY)
+  }
+
+  const [showOnlyStarred, setShowOnlyStarred] = useState(localStorage.getItem(SHOW_ONLY_STARRED_KEY) === '1')
+  const toggleOnlyStarred = (state) => {
+    setShowOnlyStarred(state)
+
+    //go to start of list (prevent bug when new list is shorter than old list)
+    setCurrentWordIndex(0)
+    
+    if(state){
+      localStorage.setItem(SHOW_ONLY_STARRED_KEY, '1')
+      return
+    }
+    
+    localStorage.removeItem(SHOW_ONLY_STARRED_KEY)
   }
 
   const classes = useStyles({})
@@ -102,8 +125,59 @@ export default ({ set, id, setSet }: Props) => {
       alert('Wysłano zgłoszenie')
   }
 
+  const filteredWords = set === null ? [] : 
+    showOnlyStarred
+      ? set.words.filter(({ starred }) => starred)
+      : set.words
+
+  //current word
+  const word = set !== null && filteredWords[currentWordIndex]
+
+  const toggleWordStar = (e: any, starCount: number) => {
+    const starred = starCount === 1
+
+    if(localStorage.getItem(STARS_LIST_KEY) === null)
+      localStorage.setItem(STARS_LIST_KEY, '[]')
+
+    if(starred){
+      localStorage.setItem(STARS_LIST_KEY, 
+        JSON.stringify(
+          [...JSON.parse(localStorage.getItem(STARS_LIST_KEY)), word.word_id]
+        )
+      )
+    } else {
+      localStorage.setItem(STARS_LIST_KEY, 
+        JSON.stringify(
+          JSON.parse(localStorage.getItem(STARS_LIST_KEY)).filter(word_id => word_id !== word.word_id)
+        )
+      )
+    }
+
+    const _set = {...set}
+    _set.words[set.words.findIndex(({ word_id }) => word_id === word.word_id)].starred = starred
+    setSet(_set)
+  }
+
+  //assign stars to words basing on localStorage
+  useLayoutEffect(() => {
+    if(set === null || localStorage.getItem(STARS_LIST_KEY) === null || 'starred' in set.words[0])
+      return
+
+    const stars = JSON.parse(localStorage.getItem(STARS_LIST_KEY))
+
+    setSet({ 
+      ...set,
+      words: set.words.map(({ word_id, ...word }) => ({
+        ...word,
+        word_id,
+        starred: stars.includes(word_id)
+      }))
+    })
+  }, [set])
+
   const [{ user }] = useStateValue()
   const logged = user !== null
+
   if(set === null)
     return (
       <>
@@ -113,8 +187,6 @@ export default ({ set, id, setSet }: Props) => {
         </Main>
       </>
     )
-
-  const word = set.words[currentWordIndex]
 
   return (
     <>
@@ -134,51 +206,58 @@ export default ({ set, id, setSet }: Props) => {
                 </Grid>
               </Grid>
               <Grid container className={classes.wordCardContainer}>
-                <Grid item md={10} xs={12}>
-                  <WordCard reversedLanguage={reversedLanguage} original={word.original} translated={word.translated} key={(reversedLanguage ? '1' : '0')+word.original+word.translated} />
-                  <div className={classes.navigation}>
-                    <Button variant="contained" color="primary" size="large" onClick={previousWord} disabled={currentWordIndex === 0}>
-                      Poprzednia
-                    </Button>
-                    <Button variant="contained" color="primary" size="large" onClick={nextWord} disabled={currentWordIndex === set.words.length - 1}>
-                      Następna
-                    </Button>
-                  </div>
-                </Grid>
+                {word ? 
+                  <Grid item md={10} xs={12}>
+                    <WordCard reversedLanguage={reversedLanguage} original={word.original} translated={word.translated} key={(reversedLanguage ? '1' : '0')+word.original+word.translated} />
+                    <div className={classes.navigation}>
+                      <Button variant="contained" color="primary" size="large" onClick={previousWord} disabled={currentWordIndex === 0}>
+                        Poprzednia
+                      </Button>
+                      <Rating value={word.starred ? 1 : 0} max={1} size="large" onChange={toggleWordStar} />
+                      <Button variant="contained" color="primary" size="large" onClick={nextWord} disabled={currentWordIndex === filteredWords.length - 1}>
+                        Następna
+                      </Button>
+                    </div>
+                  </Grid>
+                  : <Typography variant="h5">Brak słów spełniających kryteria</Typography>}
               </Grid>
             </Grid>
             <Grid item xs={12} md={4} className={classes.leftPanel}>
               <Card>
                 <List>
                   <ListItem>
-                    <Typography variant="h6" gutterBottom>
-                      Fiszki w zestawie
-                    </Typography>
+                    <FormControlLabel
+                      control={
+                        <Switch checked={showOnlyStarred} onChange={({ target: { checked } }) => toggleOnlyStarred(checked)} color="secondary" />
+                      }
+                      label="Tylko ogwiazdkowane"
+                    />
                   </ListItem>
-                  <Divider />
                   <ListItem>
                     <FormControlLabel
                       control={
                         <Switch checked={reversedLanguage} onChange={({ target: { checked } }) => reverseLanguage(checked)} color="secondary" />
                       }
-                      label="Odwróć języki"
+                      label="Zamień języki"
                     />
                   </ListItem>
                   <Divider />
-                  {reversedLanguage
-                    ? set.words.map(({ translated }, index) =>
-                        <ListItem button onClick={() => setCurrentWordIndex(index)} selected={index === currentWordIndex} key={index}> { translated } </ListItem>
-                      )
-                    : set.words.map(({ original }, index) =>
-                        <ListItem button onClick={() => setCurrentWordIndex(index)} selected={index === currentWordIndex} key={index}> { original } </ListItem>
-                      )}
+                  <ListItem>
+                    <Typography variant="h6">
+                      Fiszki w zestawie
+                    </Typography>
+                  </ListItem>
+                  {filteredWords.map((word, index) =>
+                    <Item onClick={() => setCurrentWordIndex(index)} selected={index === currentWordIndex} reversedLanguage={reversedLanguage} key={index} {...word} />
+                  )}
+                  <Divider />
                   <ListItem>
                     <Grid container justify="space-between" className={classes.controls}>
                       {logged
                         ? <>
                             {set.saved
                               ? <Button variant="outlined" onClick={toggleSavedState} size="small" color="primary" disabled={saveTransform}>Usuń z zapisanych</Button> 
-                              : <Button variant="contained" onClick={toggleSavedState} size="small" color="primary" disabled={saveTransform}>Zapisz</Button>}
+                              : <Button variant="contained" onClick={toggleSavedState} size="small" color="primary" disabled={saveTransform}>Zapisz zestaw</Button>}
                             {set.user_id === user.userId
                               ? <Link to={`/createset/${set.set_id}`} className={classes.link}>
                                   <Button variant="contained" size="small" color="primary">Edytuj</Button>

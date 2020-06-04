@@ -110,8 +110,6 @@ export default () => {
 
   const classes = useStyles({})
 
-  console.log(words)
-
   const delSet = async () => {
     if(!confirm('Na pewno chcesz usunąć?'))
       return

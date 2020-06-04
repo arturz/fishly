@@ -2,6 +2,7 @@ export interface Word {
   word_id: string
   original: string
   translated: string
+  starred?: boolean
 }
 
 export default interface Set {

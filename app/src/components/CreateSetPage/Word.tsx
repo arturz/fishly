@@ -24,6 +24,6 @@ export default ({
 
   return <>
     <TextField label="Słowo" value={original} onChange={updateOriginal} />
-    <TextField label="Przetłumaczone słowo" value={translated} onChange={updateTranslated} />
+    <TextField label="Słowo w obcym języku" value={translated} onChange={updateTranslated} />
   </>
 } 

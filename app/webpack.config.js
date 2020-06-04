@@ -77,7 +77,7 @@ let config = {
 	  
 };
 
-if (process.env.NODE_ENV === 'production') {
+/*if (process.env.NODE_ENV === 'production') {
   	config.plugins.push(
     	new webpack.optimize.UglifyJsPlugin({
 			sourceMap: false,
@@ -95,6 +95,6 @@ if (process.env.NODE_ENV === 'production') {
 			minimize: true
     	})
   	);
-}
+}*/
 
 module.exports = config;

@@ -12,6 +12,9 @@ import { useStateValue } from '../../state'
 import Item from './Item'
 
 const useStyles = makeStyles((theme: Theme) => ({
+  wordCount: {
+    color: theme.palette.text.secondary
+  },
   leftPanel: {
     userSelect: 'none'
   },
@@ -197,12 +200,13 @@ export default ({ set, id, setSet }: Props) => {
             <Grid item xs={12} md={8}>
               <Grid container justify="space-between" alignItems="center">
                 <Grid item>
-                  <Typography variant="h5">{ set.name } </Typography>
+                  <Typography variant="h5">{ set.name }</Typography>
+                  <Typography variant="subtitle2">
+                    <Link to={`/account/${set.user_id}`} className={classes.link}>{ set.login }</Link>
+                  </Typography>
                 </Grid>
                 <Grid item>
-                  <Typography variant="subtitle1">
-                    Autor: <Link to={`/account/${set.user_id}`} className={classes.link}>{ set.login }</Link>
-                  </Typography>
+                  <Typography variant="h4" className={classes.wordCount}>{currentWordIndex+1}/{filteredWords.length}</Typography>
                 </Grid>
               </Grid>
               <Grid container className={classes.wordCardContainer}>

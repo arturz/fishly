@@ -5,6 +5,9 @@ import { StateProvider } from './state'
 import initialState from './initialState'
 import Router from './router'
 
+import initReactFastclick from 'react-fastclick'
+initReactFastclick()
+
 const App = () => {
   const reducer = (state, action) => {
     switch(action.type){
@@ -15,7 +18,7 @@ const App = () => {
         }
 
       case 'logIn':
-        return {
+        return { 
           ...state,
           user: action.payload.user
         }

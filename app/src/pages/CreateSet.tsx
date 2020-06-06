@@ -27,43 +27,49 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 
+interface NewWord {
+  original: string
+  translated: string
+  index: number
+  word_id?: string //updating current set
+}
+
 export default () => {
   const [name, setName] = useState('')
   const [subject, setSubject] = useState('')
 
-  const [lastWordId, setLastWordId] = useState(0)
-  const incrementLastWordId = () => {
-    setLastWordId(lastWordId => lastWordId + 1)
-    return lastWordId + 1
+  const [lastWordIndex, setLastWordIndex] = useState(0)
+  const incrementLastWordIndex = () => {
+    setLastWordIndex(lastWordIndex => lastWordIndex + 1)
+    return lastWordIndex + 1
   }
 
-  const [words, setWords] = useState([{ original: '', translated: '', word_id: lastWordId }])
+  const [words, setWords] = useState<NewWord[]>([{ original: '', translated: '', index: lastWordIndex }])
 
-  const handleChangeWord = word_id => ({ original, translated }) =>
+  const handleChangeWord = index => ({ original, translated }) =>
     setWords(words => {
       const _words = [...words]
-      const word = _words.find((word) => word.word_id === word_id)
-      //slowo moglo zostac usuniete
+      const word = _words.find((word) => word.index === index)
+      //word could already be deleted
       if(word === undefined)
         return words
 
-      
       word.original = original
       word.translated = translated
 
-      if(words.findIndex(word => word.word_id === word_id) === words.length - 1 || words.length === 1)
-        _words.push({ original: '', translated: '', word_id: incrementLastWordId() })
+      if(words.findIndex(word => word.index === index) === words.length - 1 || words.length === 1)
+        _words.push({ original: '', translated: '', index: incrementLastWordIndex() })
 
       return _words
     })
 
-  const handleDeleteWord = word_id => () =>
+  const handleDeleteWord = index => () =>
     setWords(words => {
-      //nie usuwaj pustego pola na końcu
-      if(words.findIndex(word => word.word_id === word_id) === words.length - 1)
+      //do not remove blank fields row at the bottom
+      if(words.findIndex(word => word.index === index) === words.length - 1)
         return words
 
-      return words.filter(word => word.word_id !== word_id)
+      return words.filter(word => word.index !== index)
     })
 
   const { id } = useParams()
@@ -77,12 +83,11 @@ export default () => {
     getSet(parseInt(id)).then(({ name, subject, words }) => {
       setName(name)
       setSubject(subject)
-      setWords(
-        words
-          .map((word, index) => ({ ...word, word_id: index }))
-          .concat([{ original: '', translated: '', word_id: words.length }])
-      )
-      setLastWordId(words.length + 1)
+      setWords([
+        ...words.map((word, index) => ({ ...word, index })),
+        { original: '', translated: '', index: words.length }
+      ])
+      setLastWordIndex(words.length + 1)
       setFetchedSet(true)
     })
   }, [id])
@@ -93,7 +98,7 @@ export default () => {
     e.preventDefault()
     
     const filteredWords = words
-      .map(({ original, translated }) => ({ original, translated }))
+      .map(({ original, translated, word_id }) => ({ original, translated, word_id }))
       .filter(({ original, translated }) => original && translated)
 
     if(!name || !subject || filteredWords.length === 0)
@@ -135,6 +140,8 @@ export default () => {
       </Main>
     </>
 
+  console.log(words)
+
   return (
     <>
       <Header />
@@ -148,10 +155,10 @@ export default () => {
             </div>
             <Typography variant="h5" gutterBottom>Dodaj fiszki</Typography>
             <Grid container direction="column" className={classes.gutterBottom} spacing={1}>
-              {words.map(({ original, translated, word_id }) => (
-                <Grid item key={word_id} container alignItems="flex-end" className={classes.wordsRow}>
-                  <Word original={original} translated={translated} onChange={handleChangeWord(word_id)} />
-                  <Button variant="outlined" color="primary" onClick={handleDeleteWord(word_id)}>Usuń</Button>
+              {words.map(({ original, translated, index }) => (
+                <Grid item key={index} container alignItems="flex-end" className={classes.wordsRow}>
+                  <Word original={original} translated={translated} onChange={handleChangeWord(index)} />
+                  <Button variant="outlined" color="primary" onClick={handleDeleteWord(index)}>Usuń</Button>
                 </Grid>
               ))}
             </Grid>

@@ -19,3 +19,6 @@ You have to import tables structure from fishly.sql on your own and change crede
 ## Build
 
 Go to app and run ```npm run build```
+
+## License
+MIT

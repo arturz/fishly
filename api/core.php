@@ -2,7 +2,7 @@
   include_once 'utils.php';
   include_once 'User.php';
 
-  $url = 'http://localhost/projekt';
+  $url = 'http://localhost/Fishly';
   $dbhost = 'localhost';
   $dbname = 'fishly';
   $dbuser = 'root';

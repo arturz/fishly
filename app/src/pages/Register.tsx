@@ -109,7 +109,7 @@ export default () => {
                         <TextField fullWidth label="Nazwisko" onChange={updateLastname} />
                       </div>
                       <div>
-                        <ReCAPTCHA sitekey={window.captchaSiteKey} onChange={setCaptcha} className={classes.gutterBottom} />
+                        <ReCAPTCHA sitekey={captchaSiteKey} onChange={setCaptcha} className={classes.gutterBottom} />
                         <Button fullWidth variant="contained" size="large" color="primary" type="submit" disabled={registrationState === RegistrationStates.Requesting}>
                           Zarejestruj się
                         </Button>

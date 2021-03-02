@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { Card, Container, Divider, Grid, List, ListItem, makeStyles, Theme, Typography } from '@material-ui/core'
+import React, { useEffect, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import banAccount from '../api/account/admin/banAccount'
+import getAccount from '../api/account/getAccount'
+import DeleteAccountDialog from '../components/AccountPage/DeleteAccountDialog'
 import Header from '../components/Header'
 import Main from '../components/Main'
-import { makeStyles, Container, Typography, Grid, Card, List, ListItem, Divider, Theme } from '@material-ui/core'
 import SetsGroup from '../components/SetsGroup'
-import DeleteAccountDialog from '../components/AccountPage/DeleteAccountDialog'
-import getAccount from '../api/account/getAccount'
 import { useStateValue } from '../state'
 import statuses from '../utils/statuses'
-import banAccount from '../api/account/admin/banAccount'
 
 const useStyles = makeStyles((theme: Theme) => ({
   notFoundText: {

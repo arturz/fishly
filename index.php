@@ -9,6 +9,10 @@
     $userData = null;
     $token = null;
   }
+
+  $captchaSiteKey = getenv('CAPTCHA_SITE_KEY');
+  if($captchaSiteKey == false)
+    $captchaSiteKey = '6Le7sG4aAAAAAJz46ddHqzDhLXJq7hARw_8c_0YG'; //for development
 ?>
 <!doctype html>
 <html lang="en">
@@ -23,7 +27,8 @@
   <script type="text/javascript">
     var app = { 
       user: <?php echo json_encode($userData); ?>,
-      token: <?php echo json_encode($token); ?>
+      token: <?php echo json_encode($token); ?>,
+      captchaSiteKey: <?php echo json_encode($captchaSiteKey); ?>
     };
   </script>
   <body>

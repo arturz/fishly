@@ -1,12 +1,12 @@
-import React, { useState, useCallback } from 'react'
-import { Theme, Container, makeStyles, Avatar, Typography, TextField, Button, CardContent, Card } from '@material-ui/core'
+import { Avatar, Button, Card, CardContent, Container, makeStyles, TextField, Theme, Typography } from '@material-ui/core'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
+import React, { useCallback, useState } from 'react'
 import ReCAPTCHA from "react-google-recaptcha"
-import { captchaSitekey } from '../config/captcha'
 import registration from '../api/account/registration'
 import Alert from '../components/Alert'
 import Header from '../components/Header'
 import Main from '../components/Main'
+import { captchaSitekey } from '../initialState'
 
 const useStyles = makeStyles((theme: Theme) => ({
   '@global': {
